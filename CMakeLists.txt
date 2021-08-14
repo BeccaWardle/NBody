@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+project( nbody )
+#find_package(OpenCV PATHS /usr/local/lib/cmake NO_DEFAULT_PATH)
+find_package( OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+add_executable(nbody nbody.cpp )
+target_link_libraries( nbody ${OpenCV_LIBS})

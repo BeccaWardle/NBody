@@ -1,0 +1,16 @@
+# Ignore everything
+*
+
+# Whitelist Directories
+!*/
+
+!README.md
+!.gitignore
+!*.cpp
+!*.txt
+
+
+# Ignore unimportant CMake files
+CMakeFiles
+CMakeCache.txt
+CMakeScripts
