@@ -14,6 +14,7 @@ using namespace cv;
 using namespace std;
 
 const double grav_const = 6.67408e-11;
+const int WAITTIME = 20;
 const int canHeight = 1300;
 const int canWidth = 1300;
 
@@ -26,6 +27,7 @@ class Body
         vector<double> acc;
         vector<double> vel;
         vector<double> pos;
+        vector<double> oldacc;
         vector<vector<double>> past;
 
         Scalar colour;
@@ -46,12 +48,32 @@ class Body
             this->colour = Scalar(rng_col(rng), rng_col(rng), rng_col(rng));
         }
 
+        void printParam()
+        {
+            cout << name << ": \n" << "m: " << mass << "\tpos: ";
+            for (vector<double>::iterator it = pos.begin(); it != pos.end(); ++it)
+            {
+                cout << *it << ", ";
+            }
+            cout << "\tvel: ";
+            for (vector<double>::iterator it = vel.begin(); it != vel.end(); ++it)
+            {
+                cout << *it << ", ";
+            }
+            cout << "\tacc: ";
+            for (vector<double>::iterator it = oldacc.begin(); it != oldacc.end(); ++it)
+            {
+                cout << *it << ", ";
+            }
+            cout << endl;
+        }
+
         vector<double> accAround(Body other)
         {
             vector<double> delta_d;
-            delta_d.push_back(this->pos.at(0) - other.pos.at(0));
-            delta_d.push_back(this->pos.at(1) - other.pos.at(1));
-            delta_d.push_back(this->pos.at(2) - other.pos.at(2));
+            delta_d.push_back(other.pos.at(0) - this->pos.at(0));
+            delta_d.push_back(other.pos.at(1) - this->pos.at(1));
+            delta_d.push_back(other.pos.at(2) - this->pos.at(2));
 
             double dist_squa = pow(delta_d.at(0), 2) + pow(delta_d.at(1), 2) + pow(delta_d.at(2), 2);
             double dist = sqrt(dist_squa);
@@ -68,7 +90,7 @@ class Body
             acc.at(1) += force_y/mass;
             acc.at(2) += force_z/mass;
 
-            cout << name << " position: " <<pos.at(0) << ", " << pos.at(1) << "\tacceleration: " << acc.at(0) << ", " << acc.at(1) << endl;
+            //cout << name << " position: " <<pos.at(0) << ", " << pos.at(1) << "\tacceleration: " << acc.at(0) << ", " << acc.at(1) << endl;
             return delta_d;
         }
 
@@ -79,17 +101,23 @@ class Body
             past.push_back(pos);
 
             // update position using old velocity and acceleration
-            pos.at(0) = vel.at(0) * timestep + (0.5 * acc.at(0) * pow(timestep, 2));
-            pos.at(1) = vel.at(1) * timestep + (0.5 * acc.at(1) * pow(timestep, 2));
-            pos.at(2) = vel.at(2) * timestep + (0.5 * acc.at(2) * pow(timestep, 2));
+            pos.at(0) += vel.at(0) * timestep + (0.5 * acc.at(0) * pow(timestep, 2));
+            pos.at(1) += vel.at(1) * timestep + (0.5 * acc.at(1) * pow(timestep, 2));
+            pos.at(2) += vel.at(2) * timestep + (0.5 * acc.at(2) * pow(timestep, 2));
 
             // update velocity
             vel.at(0) += acc.at(0) * timestep;
             vel.at(1) += acc.at(1) * timestep;
             vel.at(2) += acc.at(2) * timestep;
+
+            oldacc = acc;
+
+            acc.at(0) = 0.0;
+            acc.at(1) = 0.0;
+            acc.at(2) = 0.0;
         }
 
-        void addToCan(Mat canvas,double maxDist, double maxMass, double maxRad)
+        void addToCan(Mat canvas,double maxDist, double maxMass, double maxRad, bool drawpast=true)
         {
             // Add body
             Point centre = Point((int)(min(canHeight, canWidth) * 0.4 * (pos.at(0)/maxDist) + 0.5 * canWidth),
@@ -108,6 +136,9 @@ class Body
                 //return;
             //Scalar lineColour = colour/2;
 
+            if (!drawpast)
+                return;
+
             vector<Point> pasPoints;
             for (vector<vector<double>>::iterator it = past.begin(); it != past.end(); ++it)
             {
@@ -116,7 +147,7 @@ class Body
             }
             pasPoints.push_back(Point((int)(min(canHeight, canWidth) * 0.4 * (pos.at(0)/maxDist) + 0.5 * canWidth),
                                  (int)(min(canHeight, canWidth) * 0.4 * (pos.at(1)/maxDist) + 0.5 * canHeight)));
-            cout << name << ":  " << pasPoints << endl;
+            //cout << name << ":  " << pasPoints << endl;
             polylines(canvas, pasPoints, false, Scalar(150, 150, 150), 2, LINE_8);
         }
 };
@@ -163,9 +194,11 @@ int main(int argc, char *argv[])
 
     vector<Body> bodies;
     Body Earth = Body("Eath", 5.972e24, 6371, vector<double> {0, 0, 0}, vector<double> {0, 0, 0});
-    Body Moon = Body("Moon", 7.348e22, 1737, vector<double> {0, 384.4e6, 0}, vector<double> {1033.0, 0, 0});
+    Body MoonOne = Body("Moon", 7.348e22, 1737, vector<double> {0, -384.4e6, 0}, vector<double>{-750.0, 0, 0});
+    Body MoonTwo = Body("Moon2", 7.348e22, 1737, vector<double> {0, 350.4e6, 0}, vector<double>{700.0, 0, 0});
     bodies.push_back(Earth);
-    bodies.push_back(Moon);
+    bodies.push_back(MoonOne);
+    bodies.push_back(MoonTwo);
 
     double maxMass = 0.0;
     double maxRad = 0.0;
@@ -184,18 +217,21 @@ int main(int argc, char *argv[])
         if (it->rad > maxRad)
             maxRad = it->rad;
 
-            it->addToCan(canvas, maxDist, maxMass, maxRad);
+        it->addToCan(canvas, maxDist, maxMass, maxRad);
+        it->printParam();
     }
+
     imshow(canName, canvas);
-    waitKey(0);
+    waitKey(WAITTIME);
 
     cout << "maxMass: " << maxMass << "\nmaxRad: " << maxRad << endl;
     while (1)
     {
+        system("clear");
         canvas = Mat::zeros(canHeight, canWidth, CV_8UC3);
         moveWindow(canName, 50, 50);
 
-        double timestep = 0.01;
+        double timestep = 3600;
         for (vector<Body>::iterator lowIt = bodies.begin(); lowIt != bodies.end(); ++lowIt)
         {
             for (vector<Body>::iterator upIt = bodies.begin(); upIt != bodies.end(); ++upIt)
@@ -221,11 +257,11 @@ int main(int argc, char *argv[])
         {
             it->posUpdate(timestep);
             it->addToCan(canvas, maxDist, maxMass, maxRad);
+            it->printParam();
         }
-
         imshow(canName, canvas);
         //waitKey(50);
-        waitKey(0);
+        waitKey(WAITTIME);
     }
 
     destroyAllWindows();
