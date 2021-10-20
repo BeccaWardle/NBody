@@ -18,6 +18,11 @@ const int WAITTIME = 20;
 const int canHeight = 1300;
 const int canWidth = 1300;
 
+double start_maxMass;
+double start_maxRad;
+double start_maxDist;
+
+
 class Body
 {
     public:
@@ -119,36 +124,30 @@ class Body
 
         void addToCan(Mat canvas,double maxDist, double maxMass, double maxRad, bool drawpast=true)
         {
-            // Add body
-            Point centre = Point((int)(min(canHeight, canWidth) * 0.4 * (pos.at(0)/maxDist) + 0.5 * canWidth),
-                                 (int)(min(canHeight, canWidth) * 0.4 * (pos.at(1)/maxDist) + 0.5 * canHeight));
-            //Point centre = Point((int)pos.at(0), (int)pos.at(1));
-            int cirRad = (int)(0.5 + (rad/maxRad * 50));
+            const float scaling = 0.5;
+            // Convert the space coordinates to coordinates on the canvas
+            Point centre = Point((int)(min(canHeight, canWidth) * scaling * (pos.at(0)/maxDist) + 0.5 * canWidth),
+                                 (int)(min(canHeight, canWidth) * scaling * (pos.at(1)/maxDist) + 0.5 * canHeight));
 
-            //cout << min(canHeight, canWidth) << " * 0.85 * (" << pos.at(1) << "/" << maxDist << ") = " << (min(canHeight, canWidth) * 0.85 * (pos.at(1)/maxDist)) << endl;
+            // Get the radius of the circle to display, sized relative to scale
+            int cirRad = (int)(0.5 + (rad/maxRad * 50)*(start_maxDist/maxDist));
 
-             //Scalar colour = Scalar( (int)(0.5 + (mass/maxMass * 255)), (int)(0.5 + (mass/maxMass * 255)), 0);
-
-            //cout << name << ": " << centre << "\t" << cirRad << "\t" << colour << endl;
             circle(canvas, centre, cirRad, this->colour, FILLED, LINE_8);
-
-            //if (past.size() == 0 || past.size() == 1)
-                //return;
-            //Scalar lineColour = colour/2;
 
             if (!drawpast)
                 return;
 
+            // get bodies past coordinates, convert them to canvas coordinates with the current scaling
             vector<Point> pasPoints;
             for (vector<vector<double>>::iterator it = past.begin(); it != past.end(); ++it)
             {
-                pasPoints.push_back(Point((int)(min(canHeight, canWidth) * 0.4 * (it->at(0)/maxDist) + 0.5 * canWidth),
-                                          (int)(min(canHeight, canWidth) * 0.4 * (it->at(1)/maxDist) + 0.5 * canHeight)));
+                pasPoints.push_back(Point((int)(min(canHeight, canWidth) * scaling * (it->at(0)/maxDist) + 0.5 * canWidth),
+                                          (int)(min(canHeight, canWidth) * scaling * (it->at(1)/maxDist) + 0.5 * canHeight)));
             }
-            pasPoints.push_back(Point((int)(min(canHeight, canWidth) * 0.4 * (pos.at(0)/maxDist) + 0.5 * canWidth),
-                                 (int)(min(canHeight, canWidth) * 0.4 * (pos.at(1)/maxDist) + 0.5 * canHeight)));
-            //cout << name << ":  " << pasPoints << endl;
-            polylines(canvas, pasPoints, false, Scalar(150, 150, 150), 2, LINE_8);
+            pasPoints.push_back(Point((int)(min(canHeight, canWidth) * scaling * (pos.at(0)/maxDist) + 0.5 * canWidth),
+                                 (int)(min(canHeight, canWidth) * scaling * (pos.at(1)/maxDist) + 0.5 * canHeight)));
+            
+            polylines(canvas, pasPoints, false, colour*0.4, 1, LINE_8);
         }
 };
 
@@ -192,30 +191,40 @@ int main(int argc, char *argv[])
         }
     //}*/
 
+
+    // add all bodies to the simulation with values
     vector<Body> bodies;
     Body Earth = Body("Eath", 5.972e24, 6371, vector<double> {0, 0, 0}, vector<double> {0, 0, 0});
-    Body MoonOne = Body("Moon", 7.348e22, 1737, vector<double> {0, -384.4e6, 0}, vector<double>{-750.0, 0, 0});
-    Body MoonTwo = Body("Moon2", 7.348e22, 1737, vector<double> {0, 350.4e6, 0}, vector<double>{700.0, 0, 0});
-    bodies.push_back(Earth);
+    Body MoonOne = Body("Moon1", 7.348e22, 1737, vector<double> {0, -200e6, 0}, vector<double>{-150.0, 0, 0});
+    Body MoonTwo = Body("Moon2", 7.348e22, 1737, vector<double> {0, 200e6, 0}, vector<double>{150.0, 0, 0});
+    Body MoonThree = Body("Moon3", 7.348e22, 1737, vector<double> {200e6, 0, 0}, vector<double>{0.0, -150, 0});
+    Body MoonFour = Body("Moon4", 7.348e22, 1737, vector<double> {-200e6, 0, 0}, vector<double>{0.0, 150, 0});
+    // bodies.push_back(Earth);
     bodies.push_back(MoonOne);
     bodies.push_back(MoonTwo);
+    bodies.push_back(MoonThree);
+    bodies.push_back(MoonFour);
 
     double maxMass = 0.0;
     double maxRad = 0.0;
+    // not sure where this value comes from
     double maxDist = 600e6;
+    start_maxDist= maxDist;
 
     Mat canvas = Mat::zeros(canHeight, canWidth, CV_8UC3);
     char canName[] = "frame";
     namedWindow(canName);
 
     moveWindow(canName, 50, 50);
+    // get the inital values of all bodies and plot them before first step
+    // TODO: get maxDist too?
     for (vector<Body>::iterator it = bodies.begin(); it != bodies.end(); ++it)
     {
         if (it->mass > maxMass)
-            maxMass = it->mass;
+            start_maxMass = maxMass = it->mass;
 
         if (it->rad > maxRad)
-            maxRad = it->rad;
+            start_maxRad = maxRad = it->rad;
 
         it->addToCan(canvas, maxDist, maxMass, maxRad);
         it->printParam();
