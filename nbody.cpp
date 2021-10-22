@@ -146,7 +146,7 @@ class Body
             }
             pasPoints.push_back(Point((int)(min(canHeight, canWidth) * scaling * (pos.at(0)/maxDist) + 0.5 * canWidth),
                                  (int)(min(canHeight, canWidth) * scaling * (pos.at(1)/maxDist) + 0.5 * canHeight)));
-            
+
             polylines(canvas, pasPoints, false, colour*0.4, 1, LINE_8);
         }
 };
@@ -205,6 +205,9 @@ int main(int argc, char *argv[])
     bodies.push_back(MoonThree);
     bodies.push_back(MoonFour);
 
+    double timestep = 10800;
+
+
     double maxMass = 0.0;
     double maxRad = 0.0;
     // not sure where this value comes from
@@ -240,7 +243,6 @@ int main(int argc, char *argv[])
         canvas = Mat::zeros(canHeight, canWidth, CV_8UC3);
         moveWindow(canName, 50, 50);
 
-        double timestep = 3600;
         for (vector<Body>::iterator lowIt = bodies.begin(); lowIt != bodies.end(); ++lowIt)
         {
             for (vector<Body>::iterator upIt = bodies.begin(); upIt != bodies.end(); ++upIt)
