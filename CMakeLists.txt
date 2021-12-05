@@ -11,3 +11,4 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(nbody nbody.cpp )
 
 target_link_libraries( nbody ${OpenCV_LIBS})
+target_link_libraries( MassBody ${OpenCV_LIBS})
