@@ -8,6 +8,15 @@
 
 const double GRAV_CONST = 6.67408e-11;
 
+struct canvasPasser
+{
+    cv::Mat canvas;
+    const double maxdist, maxmass, maxrad;
+    const double start_maxdist;
+    const int canHeight, canWidth;
+
+};
+
 class MassBody
 {
     public:
@@ -26,6 +35,6 @@ class MassBody
         void printParam();
         std::vector<double> accUpdate(MassBody other);
         void posUpdate(double timestep);
-        void addToCanvas(cv::Mat canvas, double maxdist, double maxmass, double maxrad, bool drawpast=true);
+        void addToCanvas(canvasPasser passed, bool drawpast = true);
 };
 #endif

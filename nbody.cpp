@@ -11,7 +11,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include "MassBody.h"
+#include "include/MassBody.h"
 
 using namespace cv;
 using namespace std;
@@ -78,8 +78,7 @@ int main(int argc, char *argv[])
     bodies.push_back(MoonThree);
     bodies.push_back(MoonFour);
 
-    double timestep = 10800;
-
+    double timestep = 108000;
 
     double maxMass = 0.0;
     double maxRad = 0.0;
@@ -94,8 +93,7 @@ int main(int argc, char *argv[])
     moveWindow(canName, 50, 50);
     // get the inital values of all bodies and plot them before first step
     // TODO: get maxDist too?
-    for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it)
-    {
+    for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it){
         if (it->mass > maxMass)
             start_maxMass = maxMass = it->mass;
 
