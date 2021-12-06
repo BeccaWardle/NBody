@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
 
     double timestep = 108000;
 
+    double time = 0.0;
+
     double maxMass = 0.0;
     double maxRad = 0.0;
     // not sure where this value comes from
@@ -112,6 +114,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         system("clear");
+        cout << "Time: " << to_string(time) << endl;
         canvas = Mat::zeros(canHeight, canWidth, CV_8UC3);
         moveWindow(canName, 50, 50);
 
@@ -144,9 +147,13 @@ int main(int argc, char *argv[])
             it->addToCanvas(passer);
             it->printParam();
         }
+
+        string timestamp = to_string(time);
+        putText(canvas, timestamp.substr(0, timestamp.length()-7)+ "s", Point(0, canHeight), FONT_HERSHEY_PLAIN, 5, Scalar(255, 255, 255), 4, LINE_8, false);
         imshow(canName, canvas);
         //waitKey(50);
         waitKey(WAITTIME);
+        time += timestep;
     }
 
     destroyAllWindows();
