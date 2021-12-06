@@ -68,10 +68,10 @@ int main(int argc, char *argv[])
     // add all bodies to the simulation with values
     vector<MassBody> bodies;
     MassBody Earth = MassBody("Eath", 5.972e24, 6371, vector<double> {0, 0, 0}, vector<double> {0, 0, 0});
-    MassBody MoonOne = MassBody("Moon1", 7.348e22, 1737, vector<double> {0, -200e6, 0}, vector<double>{-150.0, 0, 0});
-    MassBody MoonTwo = MassBody("Moon2", 7.348e22, 1737, vector<double> {0, 200e6, 0}, vector<double>{150.0, 0, 0});
-    MassBody MoonThree = MassBody("Moon3", 7.348e22, 1737, vector<double> {200e6, 0, 0}, vector<double>{0.0, -150, 0});
-    MassBody MoonFour = MassBody("Moon4", 7.348e22, 1737, vector<double> {-200e6, 0, 0}, vector<double>{0.0, 150, 0});
+    MassBody MoonOne = MassBody("Moon1", 7.348e22, 1737, vector<double> {0, -200e6, 0}, vector<double> {-150.0, 0, 0});
+    MassBody MoonTwo = MassBody("Moon2", 7.348e22, 1737, vector<double> {0, 200e6, 0}, vector<double> {150.0, 0, 0});
+    MassBody MoonThree = MassBody("Moon3", 7.348e22, 1737, vector<double> {200e6, 0, 0}, vector<double> {0.0, -150, 0});
+    MassBody MoonFour = MassBody("Moon4", 7.348e22, 1737, vector<double> {-200e6, 0, 0}, vector<double> {0.0, 150, 0});
     // bodies.push_back(Earth);
     bodies.push_back(MoonOne);
     bodies.push_back(MoonTwo);
@@ -93,14 +93,15 @@ int main(int argc, char *argv[])
     moveWindow(canName, 50, 50);
     // get the inital values of all bodies and plot them before first step
     // TODO: get maxDist too?
-    for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it){
+    for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it) {
         if (it->mass > maxMass)
             start_maxMass = maxMass = it->mass;
 
         if (it->rad > maxRad)
             start_maxRad = maxRad = it->rad;
 
-        it->addToCanvas(canvas, maxDist, maxMass, maxRad);
+        canvasPasser passer {canvas, maxDist, maxMass, maxRad, start_maxDist, canHeight, canWidth};
+        it->addToCanvas(passer);
         it->printParam();
     }
 
@@ -138,7 +139,9 @@ int main(int argc, char *argv[])
         for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it)
         {
             it->posUpdate(timestep);
-            it->addToCanvas(canvas, maxDist, maxMass, maxRad);
+            canvasPasser passer {canvas, maxDist, maxMass, maxRad, start_maxDist, canHeight, canWidth};
+
+            it->addToCanvas(passer);
             it->printParam();
         }
         imshow(canName, canvas);

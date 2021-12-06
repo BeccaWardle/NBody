@@ -19,22 +19,22 @@ struct canvasPasser
 
 class MassBody
 {
-    public:
-        std::string name;
-        double mass;
-        double rad;
-        cv::Scalar colour;
-        std::vector<double> acc;
-        std::vector<double> vel;
-        std::vector<double> pos;
-        std::vector<double> oldacc;
-        std::vector<std::vector<double>> past;
+public:
+    std::string name;
+    double mass;
+    double rad;
+    cv::Scalar colour;
+    std::vector<double> acc;
+    std::vector<double> vel;
+    std::vector<double> pos;
+    std::vector<double> oldacc;
+    std::vector<std::vector<double>> past;
 
-        MassBody(std::string inname, double inmass, double inrad, std::vector<double> pos, std::vector<double> vel);
+    MassBody(std::string inname, double inmass, double inrad, std::vector<double> pos, std::vector<double> vel);
 
-        void printParam();
-        std::vector<double> accUpdate(MassBody other);
-        void posUpdate(double timestep);
-        void addToCanvas(canvasPasser passed, bool drawpast = true);
+    void printParam();
+    std::vector<double> accUpdate(MassBody other);
+    void posUpdate(double timestep);
+    void addToCanvas(canvasPasser passed, bool drawpast = true);
 };
 #endif
