@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 {
     //int opt;
 
-    /*while ((opt = getopt(argc, argv, "h:w:ano:i:")) != EOF)
-    {
+    /*  while ((opt = getopt(argc, argv, "h:w:ano:i:")) != EOF)
+        {
         switch(opt)
         {
         case 'a':
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
 
         }
-    //}*/
+        //}*/
 
 
     // add all bodies to the simulation with values
@@ -86,16 +86,18 @@ int main(int argc, char *argv[])
     double maxRad = 0.0;
     // not sure where this value comes from
     double maxDist = 600e6;
-    start_maxDist= maxDist;
+    start_maxDist = maxDist;
 
     Mat canvas = Mat::zeros(canHeight, canWidth, CV_8UC3);
     char canName[] = "frame";
     namedWindow(canName);
 
     moveWindow(canName, 50, 50);
+
     // get the inital values of all bodies and plot them before first step
     // TODO: get maxDist too?
-    for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it) {
+    for (vector<MassBody>::iterator it = bodies.begin(); it != bodies.end(); ++it)
+    {
         if (it->mass > maxMass)
             start_maxMass = maxMass = it->mass;
 
@@ -111,6 +113,7 @@ int main(int argc, char *argv[])
     waitKey(WAITTIME);
 
     cout << "maxMass: " << maxMass << "\nmaxRad: " << maxRad << endl;
+
     while (1)
     {
         system("clear");
@@ -127,6 +130,7 @@ int main(int argc, char *argv[])
 
                 // TODO: use lambda?
                 vector<double> currDist = lowIt->accUpdate(*upIt);
+
                 for (vector<double>::iterator it = currDist.begin(); it != currDist.end(); ++it)
                 {
                     if (fabs(*it) > maxDist)
@@ -149,7 +153,7 @@ int main(int argc, char *argv[])
         }
 
         string timestamp = to_string(time);
-        putText(canvas, timestamp.substr(0, timestamp.length()-7)+ "s", Point(0, canHeight), FONT_HERSHEY_PLAIN, 5, Scalar(255, 255, 255), 4, LINE_8, false);
+        putText(canvas, timestamp.substr(0, timestamp.length() - 7) + "s", Point(0, canHeight), FONT_HERSHEY_PLAIN, 5, Scalar(255, 255, 255), 4, LINE_8, false);
         imshow(canName, canvas);
         //waitKey(50);
         waitKey(WAITTIME);

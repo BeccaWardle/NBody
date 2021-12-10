@@ -24,10 +24,10 @@ public:
     double mass;
     double rad;
     cv::Scalar colour;
-    std::vector<double> acc;
-    std::vector<double> vel;
-    std::vector<double> pos;
-    std::vector<double> oldacc;
+    std::vector<long double> acc;
+    std::vector<long double> vel;
+    std::vector<long double> pos;
+    std::vector<long double> oldacc;
     std::vector<std::vector<double>> past;
 
     MassBody(std::string inname, double inmass, double inrad, std::vector<double> pos, std::vector<double> vel);
