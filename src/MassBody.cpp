@@ -9,14 +9,14 @@
 
 #include "MassBody.h"
 
-MassBody::MassBody(std::string inname, double inmass, double inrad, std::vector<double> pos, std::vector<double> vel)
+MassBody::MassBody(std::string inname, double inmass, long double inrad, std::vector<long double> pos, std::vector<long double> vel)
 {
     this->name = inname;
     this->mass = inmass;
     this->rad = inrad;
     this->vel = vel;
     this->pos = pos;
-    this->acc = {0, 0, 0};
+    this->acc = {0.0, 0.0, 0.0};
 
     std::random_device rd;
     std::default_random_engine rng(rd());
@@ -29,25 +29,25 @@ void MassBody::printParam()
 {
     std::cout << name << ": \n" << "m: " << mass << "\tpos: ";
 
-    for (std::vector<double>::iterator it = pos.begin(); it != pos.end(); ++it)
+    for (std::vector<long double>::iterator it = pos.begin(); it != pos.end(); ++it)
         std::cout << *it << ", ";
 
     std::cout << "\tvel: ";
 
-    for (std::vector<double>::iterator it = vel.begin(); it != vel.end(); ++it)
+    for (std::vector<long double>::iterator it = vel.begin(); it != vel.end(); ++it)
         std::cout << *it << ", ";
 
     std::cout << "\tacc: ";
 
-    for (std::vector<double>::iterator it = oldacc.begin(); it != oldacc.end(); ++it)
+    for (std::vector<long double>::iterator it = oldacc.begin(); it != oldacc.end(); ++it)
         std::cout << *it << ", ";
 
     std::cout << std::endl;
 }
 
-std::vector<double> MassBody::accUpdate(MassBody other)
+std::vector<long double> MassBody::accUpdate(MassBody other)
 {
-    std::vector<double> delta_d;
+    std::vector<long double> delta_d;
     delta_d.push_back(other.pos.at(0) - this->pos.at(0));
     delta_d.push_back(other.pos.at(1) - this->pos.at(1));
     delta_d.push_back(other.pos.at(2) - this->pos.at(2));
@@ -110,7 +110,7 @@ void MassBody::addToCanvas(canvasPasser passed, bool drawpast)
     const float scaling = 0.5;
     // convert the space coordinates to coordinates on the canvas
     cv::Point centre = cv::Point((int)(std::min(canHeight, canWidth) * scaling * (pos.at(0) / maxdist) + 0.5 * canWidth),
-                         (int)(std::min(canHeight, canWidth) * scaling * (pos.at(1) / maxdist) + 0.5 * canHeight));
+                                 (int)(std::min(canHeight, canWidth) * scaling * (pos.at(1) / maxdist) + 0.5 * canHeight));
 
     // get the radius of the circle to display, sized relative to scale
     int cirrad = (int)(0.5 + (rad / maxrad * 50) * (start_maxdist / maxdist));
@@ -123,14 +123,14 @@ void MassBody::addToCanvas(canvasPasser passed, bool drawpast)
     // get bodies past coordinates, convert them to canvas coordinates with the current scaling
     std::vector<cv::Point> paspoints;
 
-    for (std::vector<std::vector<double>>::iterator it = past.begin(); it != past.end(); ++it)
+    for (std::vector<std::vector<long double>>::iterator it = past.begin(); it != past.end(); ++it)
     {
         paspoints.push_back(cv::Point((int)(std::min(canHeight, canWidth) * scaling * (it->at(0) / maxdist) + 0.5 * canWidth),
-                                  (int)(std::min(canHeight, canWidth) * scaling * (it->at(1) / maxdist) + 0.5 * canHeight)));
+                                      (int)(std::min(canHeight, canWidth) * scaling * (it->at(1) / maxdist) + 0.5 * canHeight)));
     }
 
     paspoints.push_back(cv::Point((int)(std::min(canHeight, canWidth) * scaling * (pos.at(0) / maxdist) + 0.5 * canWidth),
-                              (int)(std::min(canHeight, canWidth) * scaling * (pos.at(1) / maxdist) + 0.5 * canHeight)));
+                                  (int)(std::min(canHeight, canWidth) * scaling * (pos.at(1) / maxdist) + 0.5 * canHeight)));
 
     cv::polylines(canvas, paspoints, false, colour * 0.4, 1, cv::LINE_8);
 }

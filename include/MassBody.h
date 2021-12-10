@@ -11,30 +11,30 @@ const double GRAV_CONST = 6.67408e-11;
 struct canvasPasser
 {
     cv::Mat canvas;
-    const double maxdist, maxmass, maxrad;
-    const double start_maxdist;
+    const long double maxdist, maxmass, maxrad;
+    const long double start_maxdist;
     const int canHeight, canWidth;
 
 };
 
 class MassBody
 {
-public:
-    std::string name;
-    double mass;
-    double rad;
-    cv::Scalar colour;
-    std::vector<long double> acc;
-    std::vector<long double> vel;
-    std::vector<long double> pos;
-    std::vector<long double> oldacc;
-    std::vector<std::vector<double>> past;
+    public:
+        std::string name;
+        double mass;
+        double rad;
+        cv::Scalar colour;
+        std::vector<long double> acc;
+        std::vector<long double> vel;
+        std::vector<long double> pos;
+        std::vector<long double> oldacc;
+        std::vector<std::vector<long double>> past;
 
-    MassBody(std::string inname, double inmass, double inrad, std::vector<double> pos, std::vector<double> vel);
+        MassBody(std::string inname, double inmass, long double inrad, std::vector<long double> pos, std::vector<long double> vel);
 
-    void printParam();
-    std::vector<double> accUpdate(MassBody other);
-    void posUpdate(double timestep);
-    void addToCanvas(canvasPasser passed, bool drawpast = true);
+        void printParam();
+        std::vector<long double> accUpdate(MassBody other);
+        void posUpdate(double timestep);
+        void addToCanvas(canvasPasser passed, bool drawpast = true);
 };
 #endif

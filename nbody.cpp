@@ -67,11 +67,11 @@ int main(int argc, char *argv[])
 
     // add all bodies to the simulation with values
     vector<MassBody> bodies;
-    MassBody Earth = MassBody("Eath", 5.972e24, 6371, vector<double> {0, 0, 0}, vector<double> {0, 0, 0});
-    MassBody MoonOne = MassBody("Moon1", 7.348e22, 1737, vector<double> {0, -200e6, 0}, vector<double> {-150.0, 0, 0});
-    MassBody MoonTwo = MassBody("Moon2", 7.348e22, 1737, vector<double> {0, 200e6, 0}, vector<double> {150.0, 0, 0});
-    MassBody MoonThree = MassBody("Moon3", 7.348e22, 1737, vector<double> {200e6, 0, 0}, vector<double> {0.0, -150, 0});
-    MassBody MoonFour = MassBody("Moon4", 7.348e22, 1737, vector<double> {-200e6, 0, 0}, vector<double> {0.0, 150, 0});
+    MassBody Earth = MassBody("Eath", 5.972e24, 6371, vector<long double> {0, 0, 0}, vector<long double> {0, 0, 0});
+    MassBody MoonOne = MassBody("Moon1", 7.348e22, 1737, vector<long double> {0, -200e6, 0}, vector<long double> {-150.0, 0, 0});
+    MassBody MoonTwo = MassBody("Moon2", 7.348e22, 1737, vector<long double> {0, 200e6, 0}, vector<long double> {150.0, 0, 0});
+    MassBody MoonThree = MassBody("Moon3", 7.348e22, 1737, vector<long double> {200e6, 0, 0}, vector<long double> {0.0, -150, 0});
+    MassBody MoonFour = MassBody("Moon4", 7.348e22, 1737, vector<long double> {-200e6, 0, 0}, vector<long double> {0.0, 150, 0});
     // bodies.push_back(Earth);
     bodies.push_back(MoonOne);
     bodies.push_back(MoonTwo);
@@ -129,9 +129,9 @@ int main(int argc, char *argv[])
                     continue;
 
                 // TODO: use lambda?
-                vector<double> currDist = lowIt->accUpdate(*upIt);
+                vector<long double> currDist = lowIt->accUpdate(*upIt);
 
-                for (vector<double>::iterator it = currDist.begin(); it != currDist.end(); ++it)
+                for (vector<long double>::iterator it = currDist.begin(); it != currDist.end(); ++it)
                 {
                     if (fabs(*it) > maxDist)
                     {
